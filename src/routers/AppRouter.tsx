@@ -1,44 +1,49 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import MainPage from '../pages/MainPage';
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
+import UsersPage from "../pages/UsersPage";
+import RequestsPage from "../pages/RequestsPage";
+import SuportPage from "../pages/SuportPage";
+import MainPage from "../pages/MainPage";
+import HomePage from "../pages/HomePage";
+import LoginPage from "../pages/auth/LoginPage";
+import RegisterPage from "../pages/auth/RegisterPage";
 
 const AppRouter = () => {
     const router = createBrowserRouter([
         {
             path: "/login",
-            element: <div>Hello world!</div>,
+            element: <LoginPage />,
         },
         {
             path: "/register",
-            element: <div>Hello world!</div>,
+            element: <RegisterPage />,
         },
         {
             path: "/",
-            element: <MainPage/>,
+            element: <MainPage />,
             children: [
                 {
                     path: "main",
-                    element: <div>Hello world!</div>,
-                    index: true
+                    element: <HomePage />,
+                    // TODO: Разобраться с индексом.
+                    index: true,
                 },
                 {
                     path: "users",
-                    element: <div>This is a User Page.</div>
+                    element: <UsersPage />,
                 },
                 {
                     path: "requests",
-                    element: <div>This is a Requests Page.</div>
+                    element: <RequestsPage />,
                 },
                 {
                     path: "support",
-                    element: <div>This is a Support Page.</div>
-                }
-            ]
-        }
+                    element: <SuportPage />,
+                },
+            ],
+        },
     ]);
-      
-    return (
-        <RouterProvider router={router} />
-    );
-}
+
+    return <RouterProvider router={router} />;
+};
 
 export default AppRouter;
