@@ -102,7 +102,7 @@ const MainPage = () => {
                     <Row>
                         <Col span={8} offset={20}>
                             <Dropdown menu={{items}}>
-                                {/* //TODO: Придумать, как сделать ховер. */}
+                                {/* //TODO: Исправить на инлайн-вывод + кнопку с выходом (мб иконка). */}
                                 <a onClick={(e) => e.preventDefault()}>
                                     <Space>
                                         Олег Администратор

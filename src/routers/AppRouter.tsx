@@ -5,17 +5,12 @@ import SuportPage from "../pages/SuportPage";
 import MainPage from "../pages/MainPage";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/auth/LoginPage";
-import RegisterPage from "../pages/auth/RegisterPage";
 
 const AppRouter = () => {
     const router = createBrowserRouter([
         {
             path: "/login",
             element: <LoginPage />,
-        },
-        {
-            path: "/register",
-            element: <RegisterPage />,
         },
         {
             path: "/",
