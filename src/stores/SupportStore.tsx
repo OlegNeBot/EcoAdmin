@@ -4,6 +4,11 @@ import {baseGetRequest, basePutRequest} from "../requests";
 import accountStore from "./AccountStore";
 import {SupportModel} from "../models/SupportModel";
 
+type SupportRequestResponsible = {
+    sr: SupportModel;
+    account: AccountModel;
+};
+
 class SupportStore {
     constructor() {
         makeAutoObservable(this, {}, {deep: true, autoBind: true});
@@ -39,7 +44,7 @@ class SupportStore {
         const account = accountStore.account;
 
         try {
-            await basePutRequest<{sr: SupportModel; account: AccountModel}, null>("supportrequest/responsible", {
+            await basePutRequest<SupportRequestResponsible, null>("supportrequest/responsible", {
                 sr,
                 account,
             });

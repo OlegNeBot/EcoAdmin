@@ -23,4 +23,4 @@ yarn-debug.log*
 yarn-error.log*
 
 # Environment config
-config.json
+config.js

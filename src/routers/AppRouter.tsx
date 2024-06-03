@@ -7,10 +7,16 @@ import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/auth/LoginPage";
 
 const AppRouter = () => {
+    // TODO: Сверстать страницу для ошибки.
+
     const router = createBrowserRouter([
         {
             path: "/login",
             element: <LoginPage />,
+        },
+        {
+            path: "/error",
+            element: <div>Error</div>,
         },
         {
             path: "/",
@@ -18,9 +24,8 @@ const AppRouter = () => {
             children: [
                 {
                     path: "main",
-                    element: <HomePage />,
-                    // TODO: Разобраться с индексом.
                     index: true,
+                    element: <HomePage />,
                 },
                 {
                     path: "users",

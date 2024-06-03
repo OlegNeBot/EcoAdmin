@@ -1,6 +1,12 @@
 import {BorderlessTableOutlined, EyeInvisibleOutlined, EyeTwoTone, MailOutlined} from "@ant-design/icons";
 import {Button, Checkbox, Col, Flex, Form, FormProps, Input, Row, Typography} from "antd";
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
+import {basePostRequest} from "../../requests";
+import {AccountModel} from "../../models/AccountModel";
+import accountStore from "../../stores/AccountStore";
+import {sha256} from "js-sha256";
+import authStore from "../../stores/AuthStore";
+import {useNavigate} from "react-router-dom";
 
 type FieldType = {
     email?: string;
@@ -13,17 +19,63 @@ const textStyle: React.CSSProperties = {
     fontFamily: "Segoe UI",
 };
 
+type LoginModel = {
+    email: string;
+    password: string;
+};
+
+type AuthResult = {
+    account: AccountModel;
+    accessToken: string;
+    refreshToken: string;
+};
+
 const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (localStorage.getItem("accessToken") && authStore.remember) {
+            navigate("/");
+        }
+    }, []);
+
     // TODO: Разобраться с этими событиями.
     // TODO: Исправить values:any.
 
-    const onFinish: FormProps<FieldType>["onFinish"] = useCallback((values: any) => {
+    const onFinish: FormProps<FieldType>["onFinish"] = useCallback(async (values: any) => {
         setIsLoading(true);
         console.log("Success:", values);
+
+        const data: LoginModel = {
+            email: values.email,
+            password: sha256(values.password),
+        };
+
+        await basePostRequest<LoginModel, AuthResult>("auth/signin", data).then((result) => {
+            if (typeof result !== "string" && result !== undefined) {
+                accountStore.account = result.account;
+                // TODO: Добавить проверку роли администратора. Мб на бэк.
+                if (values.remember) {
+                    authStore.setRemember(values.remember);
+
+                    localStorage.setItem("accessToken", result.accessToken);
+                    localStorage.setItem("refreshToken", result.refreshToken);
+                }
+
+                sessionStorage.setItem("accessToken", result.accessToken);
+                sessionStorage.setItem("refreshToken", result.refreshToken);
+
+                authStore.setAuth();
+                navigate("/main");
+            } else {
+                console.log(result !== undefined ? result : "Неизвестная ошибка!");
+            }
+        });
+
         setIsLoading(false);
     }, []);
 

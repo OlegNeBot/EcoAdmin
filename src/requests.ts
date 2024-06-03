@@ -1,6 +1,6 @@
 import axios, {AxiosError} from "axios";
-import {devRequestUrl} from "../config.json";
 import authStore from "./stores/AuthStore";
+import {DEV_REQUEST_URL} from "./config";
 
 var isRefreshing = false;
 
@@ -15,7 +15,7 @@ const Queue = (token: any) => {
 };
 
 const $api = axios.create({
-    baseURL: devRequestUrl,
+    baseURL: DEV_REQUEST_URL,
 });
 
 $api.interceptors.request.use((config) => {
@@ -40,7 +40,7 @@ $api.interceptors.response.use(
                 })
                 .then((token) => {
                     originalRequest.headers.Authorization = `Bearer ${token}`;
-                    originalRequest._isRetry;
+                    originalRequest._isRetry = true;
                     return $api.request(originalRequest);
                 })
                 .catch((err) => Promise.reject(err));
@@ -70,7 +70,7 @@ async function refreshToken() {
     }
 
     await axios
-    .post(devRequestUrl + "auth/refresh", {RToken: rToken})
+    .post(DEV_REQUEST_URL + "auth/refresh", {RToken: rToken})
     .then((response) => {
         if (authStore.remember) {
             localStorage.setItem("accessToken", response.data.accessToken);

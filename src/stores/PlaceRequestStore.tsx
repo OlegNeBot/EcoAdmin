@@ -4,6 +4,16 @@ import {baseGetRequest, basePutRequest} from "../requests";
 import {EcoPlaceRequestModel} from "../models/EcoPlaceModel";
 import accountStore from "./AccountStore";
 
+type RequestApproved = {
+    epr: EcoPlaceRequestModel;
+    isApproved: boolean;
+};
+
+type EcoPlaceRequestResponsible = {
+    epr: EcoPlaceRequestModel;
+    account: AccountModel;
+};
+
 class PlaceRequestStore {
     constructor() {
         makeAutoObservable(this, {}, {deep: true, autoBind: true});
@@ -29,7 +39,7 @@ class PlaceRequestStore {
 
     reviewRequest = async (epr: EcoPlaceRequestModel, isApproved: boolean) => {
         try {
-            await basePutRequest<{epr: EcoPlaceRequestModel; isApproved: boolean}, null>("placerequest", {
+            await basePutRequest<RequestApproved, null>("placerequest", {
                 epr,
                 isApproved,
             });
@@ -42,7 +52,7 @@ class PlaceRequestStore {
         const account = accountStore.account;
 
         try {
-            await basePutRequest<{epr: EcoPlaceRequestModel; account: AccountModel}, null>("placerequest/responsible", {
+            await basePutRequest<EcoPlaceRequestResponsible, null>("placerequest/responsible", {
                 epr,
                 account,
             });

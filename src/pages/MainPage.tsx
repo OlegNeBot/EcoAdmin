@@ -1,8 +1,10 @@
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Col, Divider, Dropdown, Image, Layout, Menu, MenuProps, Row, Space, Typography} from "antd";
 import {DownOutlined, ExclamationOutlined, HomeOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 import logo from "../logo.png";
 import {Outlet, useLocation, useNavigate} from "react-router-dom";
+import accountStore from "../stores/AccountStore";
+import {observer} from "mobx-react-lite";
 
 const {Header, Content, Footer, Sider} = Layout;
 
@@ -16,6 +18,10 @@ const MainPage = () => {
     const [selected, setSelected] = useState(location.pathname.split("/")[1]);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        accountStore.loadAccount();
+    }, []);
 
     const menuItems: MenuItem[] = useMemo(
         () => [
@@ -105,7 +111,7 @@ const MainPage = () => {
                                 {/* //TODO: Исправить на инлайн-вывод + кнопку с выходом (мб иконка). */}
                                 <a onClick={(e) => e.preventDefault()}>
                                     <Space>
-                                        Олег Администратор
+                                        {accountStore.account.name}
                                         <DownOutlined />
                                     </Space>
                                 </a>
@@ -122,4 +128,4 @@ const MainPage = () => {
     );
 };
 
-export default MainPage;
+export default observer(MainPage);

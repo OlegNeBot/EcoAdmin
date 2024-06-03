@@ -1,9 +1,15 @@
 import {Col, Row, Table, Typography} from "antd";
-import {useMemo} from "react";
+import {useEffect, useMemo} from "react";
+import accountStore from "../stores/AccountStore";
+import {observer} from "mobx-react-lite";
 
 const {Title} = Typography;
 
 const UsersPage = () => {
+    useEffect(() => {
+        accountStore.loadUsers();
+    }, [accountStore.users]);
+
     const columns = useMemo(
         () => [
             {
@@ -30,6 +36,8 @@ const UsersPage = () => {
         []
     );
 
+    // TODO: Добавить парсинг данных в таблицу.
+
     return (
         <>
             <Row>
@@ -46,4 +54,4 @@ const UsersPage = () => {
     );
 };
 
-export default UsersPage;
+export default observer(UsersPage);
