@@ -1,6 +1,6 @@
 import {AccountModel} from "./AccountModel";
 
-export type EcoPlaceModel = {
+type EcoPlaceModel = {
     id: string;
     name: string;
     coordinates: {
