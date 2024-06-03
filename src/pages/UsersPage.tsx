@@ -1,7 +1,8 @@
-import {Col, Row, Table, Typography} from "antd";
-import {useEffect, useMemo} from "react";
+import {Col, Form, Input, InputNumber, Row, Table, Typography} from "antd";
+import {useEffect, useMemo, useState} from "react";
 import accountStore from "../stores/AccountStore";
 import {observer} from "mobx-react-lite";
+import {AccountModel} from "../models/AccountModel";
 
 const {Title} = Typography;
 
@@ -10,33 +11,52 @@ const UsersPage = () => {
         accountStore.loadUsers();
     }, [accountStore.users]);
 
+    const edit = (record: AccountModel) => {
+        // TODO: Добавить переход на страницу с редактированием.
+    };
+
     const columns = useMemo(
         () => [
             {
                 title: "Имя",
                 dataIndex: "name",
                 key: "name",
+                editable: true,
+                render: (name: string) => {
+                    return <b>{name}</b>;
+                },
             },
             {
                 title: "Email",
                 dataIndex: "email",
                 key: "email",
+                editable: true,
             },
             {
                 title: "Кол-во баллов",
                 dataIndex: "totalScore",
                 key: "totalScore",
+                editable: true,
             },
             {
                 title: "Роль",
-                dataIndex: "role.name",
-                key: "role.name",
+                dataIndex: "role",
+                key: "role",
+                editable: false,
+                render: (role: {name: string}) => {
+                    return role.name;
+                },
+            },
+            {
+                title: "Редактирование",
+                dataIndex: "editing",
+                render: (record: AccountModel) => {
+                    return <Typography.Link onClick={() => edit(record)}>Редактировать</Typography.Link>;
+                },
             },
         ],
         []
     );
-
-    // TODO: Добавить парсинг данных в таблицу.
 
     return (
         <>
@@ -47,7 +67,8 @@ const UsersPage = () => {
             </Row>
             <Row>
                 <Col xs={24} md={{span: 18, offset: 3}}>
-                    <Table columns={columns} />
+                    {/* //TODO: Добавить сортировку, фильтрацию и т.д. */}
+                    <Table columns={columns} dataSource={accountStore.users} />
                 </Col>
             </Row>
         </>

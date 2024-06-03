@@ -1,6 +1,6 @@
 import {makeAutoObservable, runInAction} from "mobx";
 import {AccountModel} from "../models/AccountModel";
-import {baseGetRequest} from "../requests";
+import {baseGetRequest, basePutRequest} from "../requests";
 
 class AccountStore {
     constructor() {
@@ -45,6 +45,19 @@ class AccountStore {
                 } else {
                     console.log("Проблема с получением всех пользователей!");
                 }
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    updateUser = async (account: AccountModel) => {
+        try {
+            await basePutRequest<AccountModel, null>("account", account).then((result) => {
+                runInAction(() => {
+                    const accountidx = this.users.indexOf(this.users.find((acc) => acc.id === account.id)!);
+                    this.users[accountidx] = account;
+                });
             });
         } catch (error) {
             console.log(error);

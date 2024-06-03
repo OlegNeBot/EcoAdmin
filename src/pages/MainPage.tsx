@@ -113,7 +113,21 @@ const MainPage = () => {
                         <Col span={8} offset={20}>
                             <Dropdown menu={{items}}>
                                 {/* //TODO: Исправить на инлайн-вывод + кнопку с выходом (мб иконка). */}
-                                <a onClick={(e) => e.preventDefault()}>
+                                <a
+                                    onClick={(e) => {
+                                        e.preventDefault();
+
+                                        if (authStore.remember) {
+                                            localStorage.removeItem("accessToken");
+                                            localStorage.removeItem("refreshToken");
+                                        }
+
+                                        sessionStorage.removeItem("accessToken");
+                                        sessionStorage.removeItem("refreshToken");
+
+                                        navigate("/login");
+                                    }}
+                                >
                                     <Space>
                                         {accountStore.account.name}
                                         <DownOutlined />
@@ -124,6 +138,7 @@ const MainPage = () => {
                     </Row>
                 </Header>
                 <Content>
+                    {/* // TODO: Исправить наличие скроллбаров. */}
                     <Outlet />
                 </Content>
                 <Footer style={{textAlign: "center"}}>EcoAdmin Автор: Олег Голованов Все права защищены</Footer>
