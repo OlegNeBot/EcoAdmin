@@ -60,6 +60,8 @@ $api.interceptors.response.use(
 
         //throw error;
         console.log(error);
+
+        return Promise.reject(error);
     }
 );
 
@@ -112,12 +114,18 @@ export async function basePostRequest<T, R>(url: string, data: T): Promise<R | s
     .then((response) => {
         if (response.status === 200) {
             return response.data;
-        } else if (response.status === 404) {
-            return response.data;
         }
     })
     .catch((error: AxiosError) => {
-        console.log(error);
+        if (error.response) {
+            if (error.response.status === 404 || error.response.status === 403) {
+                if (typeof error.response.data === "string") {
+                    return error.response.data;
+                }
+            }
+        }
+
+        console.log(error.response);
         return undefined;
     });
 }

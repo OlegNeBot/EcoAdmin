@@ -5,6 +5,7 @@ import logo from "../logo.png";
 import {Outlet, useLocation, useNavigate} from "react-router-dom";
 import accountStore from "../stores/AccountStore";
 import {observer} from "mobx-react-lite";
+import authStore from "../stores/AuthStore";
 
 const {Header, Content, Footer, Sider} = Layout;
 
@@ -20,6 +21,9 @@ const MainPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (!localStorage.getItem("accessToken") || !authStore.isAuth) {
+            navigate("/login");
+        }
         accountStore.loadAccount();
     }, []);
 

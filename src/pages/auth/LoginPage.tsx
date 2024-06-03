@@ -1,5 +1,5 @@
 import {BorderlessTableOutlined, EyeInvisibleOutlined, EyeTwoTone, MailOutlined} from "@ant-design/icons";
-import {Button, Checkbox, Col, Flex, Form, FormProps, Input, Row, Typography} from "antd";
+import {Button, Checkbox, Col, Flex, Form, FormProps, Input, Modal, Row, Typography} from "antd";
 import {useCallback, useEffect, useState} from "react";
 import {basePostRequest} from "../../requests";
 import {AccountModel} from "../../models/AccountModel";
@@ -35,6 +35,10 @@ const LoginPage = () => {
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
+    // Modal.
+    const [errText, setErrText] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -46,6 +50,18 @@ const LoginPage = () => {
     // TODO: Разобраться с этими событиями.
     // TODO: Исправить values:any.
 
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+
     const onFinish: FormProps<FieldType>["onFinish"] = useCallback(async (values: any) => {
         setIsLoading(true);
         console.log("Success:", values);
@@ -55,10 +71,10 @@ const LoginPage = () => {
             password: sha256(values.password),
         };
 
-        await basePostRequest<LoginModel, AuthResult>("auth/signin", data).then((result) => {
+        await basePostRequest<LoginModel, AuthResult>("auth/signin/admin", data).then((result) => {
             if (typeof result !== "string" && result !== undefined) {
                 accountStore.account = result.account;
-                // TODO: Добавить проверку роли администратора. Мб на бэк.
+
                 if (values.remember) {
                     authStore.setRemember(values.remember);
 
@@ -72,7 +88,8 @@ const LoginPage = () => {
                 authStore.setAuth();
                 navigate("/main");
             } else {
-                console.log(result !== undefined ? result : "Неизвестная ошибка!");
+                setErrText(result !== undefined ? result : "Неизвестная ошибка!");
+                setIsModalOpen(true);
             }
         });
 
@@ -80,13 +97,28 @@ const LoginPage = () => {
     }, []);
 
     const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
-        console.log("Failed:", errorInfo);
+        setErrText("Проверьте введенные данные и повторите попытку!");
+        setIsModalOpen(true);
     };
 
     return (
         <Row align="middle" style={{height: "100vh"}}>
             <Col span={16} offset={4}>
                 <Flex align="center" justify="center" vertical>
+                    <Modal
+                        title="Ошибка"
+                        open={isModalOpen}
+                        onOk={handleOk}
+                        onCancel={handleCancel}
+                        footer={[
+                            <Button key="submit" type="primary" onClick={handleOk}>
+                                Понятно
+                            </Button>,
+                        ]}
+                    >
+                        {errText}
+                    </Modal>
+
                     <Typography.Title level={1} style={textStyle}>
                         EcoAdmin
                     </Typography.Title>
