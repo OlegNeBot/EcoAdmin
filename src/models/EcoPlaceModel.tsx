@@ -21,7 +21,8 @@ export type EcoPlaceRequestModel = {
     description: string;
     isReviewed: boolean;
     ecoPlace: EcoPlaceModel;
-    placeRequest: {
+    placeResponsible?: {
         account: AccountModel;
     };
+    account?: AccountModel;
 };

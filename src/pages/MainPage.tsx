@@ -21,11 +21,15 @@ const MainPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!localStorage.getItem("accessToken") || !authStore.isAuth) {
+        if (!localStorage.getItem("accessToken")) {
+            authStore.removeAuth();
             navigate("/login");
+        } else {
+            authStore.setAuth();
+
+            accountStore.loadAccount();
         }
-        accountStore.loadAccount();
-    }, []);
+    }, [authStore.isAuth]);
 
     const menuItems: MenuItem[] = useMemo(
         () => [
@@ -96,7 +100,7 @@ const MainPage = () => {
                 onCollapse={(value) => setCollapsed(value)}
                 className="ant-layout-sider-light"
             >
-                <Image src={logo} style={{paddingTop: 10, paddingBottom: 3}} />
+                <Image src={logo} style={{paddingTop: 10, paddingBottom: 3}} preview={false} />
                 <Menu
                     mode="inline"
                     items={menuItems}
@@ -117,10 +121,8 @@ const MainPage = () => {
                                     onClick={(e) => {
                                         e.preventDefault();
 
-                                        if (authStore.remember) {
-                                            localStorage.removeItem("accessToken");
-                                            localStorage.removeItem("refreshToken");
-                                        }
+                                        localStorage.removeItem("accessToken");
+                                        localStorage.removeItem("refreshToken");
 
                                         sessionStorage.removeItem("accessToken");
                                         sessionStorage.removeItem("refreshToken");
