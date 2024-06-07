@@ -5,6 +5,9 @@ import SuportPage from "../pages/SuportPage";
 import MainPage from "../pages/MainPage";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/auth/LoginPage";
+import EditUserPage from "../pages/EditUserPage";
+import RequestViewPage from "../pages/RequestViewPage";
+import SupportViewPage from "../pages/SupportViewPage";
 
 const AppRouter = () => {
     // TODO: Сверстать страницу для ошибки.
@@ -29,15 +32,45 @@ const AppRouter = () => {
                 },
                 {
                     path: "users",
-                    element: <UsersPage />,
+                    children: [
+                        {
+                            path: "*",
+                            index: true,
+                            element: <UsersPage />,
+                        },
+                        {
+                            path: ":userId",
+                            element: <EditUserPage />,
+                        },
+                    ],
                 },
                 {
                     path: "requests",
-                    element: <RequestsPage />,
+                    children: [
+                        {
+                            path: "*",
+                            index: true,
+                            element: <RequestsPage />,
+                        },
+                        {
+                            path: ":requestId",
+                            element: <RequestViewPage />,
+                        },
+                    ],
                 },
                 {
                     path: "support",
-                    element: <SuportPage />,
+                    children: [
+                        {
+                            path: "*",
+                            index: true,
+                            element: <SuportPage />,
+                        },
+                        {
+                            path: ":supportId",
+                            element: <SupportViewPage />,
+                        },
+                    ],
                 },
             ],
         },

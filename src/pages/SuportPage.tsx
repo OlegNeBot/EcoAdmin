@@ -3,12 +3,15 @@ import {useEffect} from "react";
 import supportStore from "../stores/SupportStore";
 import {observer} from "mobx-react-lite";
 import {RightCircleOutlined} from "@ant-design/icons";
+import {useNavigate} from "react-router-dom";
 const {Title, Text} = Typography;
 
 const SuportPage = () => {
+    const navigate = useNavigate();
+
     useEffect(() => {
         supportStore.loadSupportRequests();
-    }, [supportStore.supportRequests]);
+    }, []);
 
     return (
         <>
@@ -37,20 +40,19 @@ const SuportPage = () => {
                                     <Card
                                         style={{marginTop: 16}}
                                         title={`Заявка ${item.id}`}
-                                        extra={
-                                            item.supportResponsible
-                                                ? `В работе пользователем ${item.supportResponsible.account.name}`
-                                                : "Не обработана"
-                                        }
                                         actions={[
                                             <div
                                                 onClick={(e) => {
                                                     e.preventDefault();
+
+                                                    supportStore.setResponsible(item.id).then(() => {
+                                                        navigate(`${item.id}`);
+                                                    });
                                                 }}
                                             >
                                                 <Space>
                                                     <RightCircleOutlined />
-                                                    <Text>{"Взять в работу"}</Text>
+                                                    <a>{"Взять в работу"}</a>
                                                 </Space>
                                             </div>,
                                         ]}
@@ -59,6 +61,11 @@ const SuportPage = () => {
                                             <Text style={{textOverflow: "ellipsis"}}>{item.description}</Text>
                                             <Text type="secondary">{`От: ${item.account.name}, ${item.account.email}`}</Text>
                                         </Space>
+                                        <Title level={5}>
+                                            {item.supportResponsible
+                                                ? `В работе пользователем ${item.supportResponsible.account.name}`
+                                                : "Не обработана"}
+                                        </Title>
                                     </Card>
                                 </List.Item>
                             );

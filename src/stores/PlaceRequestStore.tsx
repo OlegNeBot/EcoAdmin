@@ -5,13 +5,13 @@ import {EcoPlaceRequestModel} from "../models/EcoPlaceModel";
 import accountStore from "./AccountStore";
 
 type RequestApproved = {
-    epr: EcoPlaceRequestModel;
+    eprId: string;
     isApproved: boolean;
 };
 
 type EcoPlaceRequestResponsible = {
-    epr: EcoPlaceRequestModel;
-    account: AccountModel;
+    eprId: string;
+    accountId: string;
 };
 
 class PlaceRequestStore {
@@ -37,10 +37,10 @@ class PlaceRequestStore {
         }
     };
 
-    reviewRequest = async (epr: EcoPlaceRequestModel, isApproved: boolean) => {
+    reviewRequest = async (eprId: string, isApproved: boolean) => {
         try {
             await basePutRequest<RequestApproved, null>("placerequest", {
-                epr,
+                eprId,
                 isApproved,
             });
         } catch (error) {
@@ -48,13 +48,17 @@ class PlaceRequestStore {
         }
     };
 
-    setResponsible = async (epr: EcoPlaceRequestModel) => {
-        const account = accountStore.account;
+    setResponsible = async (eprId: string) => {
+        const accountId = accountStore.account.id;
 
         try {
             await basePutRequest<EcoPlaceRequestResponsible, null>("placerequest/responsible", {
-                epr,
-                account,
+                eprId,
+                accountId,
+            }).then(() => {
+                runInAction(() => {
+                    this.loadRequests();
+                });
             });
         } catch (error) {
             console.log(error);

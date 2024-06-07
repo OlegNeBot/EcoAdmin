@@ -2,13 +2,16 @@ import {Col, List, Row, Typography} from "antd";
 import {useEffect} from "react";
 import placeRequestStore from "../stores/PlaceRequestStore";
 import {observer} from "mobx-react-lite";
+import {useNavigate} from "react-router-dom";
 
 const {Title} = Typography;
 
 const RequestsPage = () => {
+    const navigate = useNavigate();
+
     useEffect(() => {
         placeRequestStore.loadRequests();
-    }, [placeRequestStore.placeRequests]);
+    }, []);
 
     return (
         <>
@@ -30,7 +33,10 @@ const RequestsPage = () => {
                                         <a
                                             onClick={(e) => {
                                                 e.preventDefault();
-                                                console.log(item);
+
+                                                placeRequestStore.setResponsible(item.id).then(() => {
+                                                    navigate(`${item.id}`);
+                                                });
                                             }}
                                         >
                                             Взять в работу

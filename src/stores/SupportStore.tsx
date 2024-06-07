@@ -5,8 +5,8 @@ import accountStore from "./AccountStore";
 import {SupportModel} from "../models/SupportModel";
 
 type SupportRequestResponsible = {
-    sr: SupportModel;
-    account: AccountModel;
+    srId: string;
+    accountId: string;
 };
 
 class SupportStore {
@@ -32,21 +32,25 @@ class SupportStore {
         }
     };
 
-    completeRequest = async (sr: SupportModel) => {
+    completeRequest = async (srId: string) => {
         try {
-            await basePutRequest<SupportModel, null>("supportrequest", sr);
+            await basePutRequest<string, null>("supportrequest", srId);
         } catch (error) {
             console.log(error);
         }
     };
 
-    setResponsible = async (sr: SupportModel) => {
-        const account = accountStore.account;
+    setResponsible = async (srId: string) => {
+        const accountId = accountStore.account.id;
 
         try {
             await basePutRequest<SupportRequestResponsible, null>("supportrequest/responsible", {
-                sr,
-                account,
+                srId,
+                accountId,
+            }).then(() => {
+                runInAction(() => {
+                    this.loadSupportRequests();
+                });
             });
         } catch (error) {
             console.log(error);

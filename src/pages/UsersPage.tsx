@@ -1,19 +1,17 @@
-import {Col, Form, Input, InputNumber, Row, Table, Typography, TableColumnsType} from "antd";
-import {useEffect, useMemo, useState} from "react";
+import {Col, Row, Table, Typography, TableColumnsType} from "antd";
+import {useEffect, useMemo} from "react";
 import accountStore from "../stores/AccountStore";
 import {observer} from "mobx-react-lite";
-import {AccountModel} from "../models/AccountModel";
+import {useNavigate} from "react-router-dom";
 
 const {Title} = Typography;
 
 const UsersPage = () => {
+    const navigate = useNavigate();
+
     useEffect(() => {
         accountStore.loadUsers();
-    }, [accountStore.users]);
-
-    const edit = (record: AccountModel) => {
-        // TODO: Добавить переход на страницу с редактированием.
-    };
+    }, []);
 
     const columns: TableColumnsType = useMemo(
         () => [
@@ -25,7 +23,6 @@ const UsersPage = () => {
                     return <b>{name}</b>;
                 },
                 showSorterTooltip: {target: "sorter-icon"},
-                defaultSortOrder: "ascend",
                 sorter: (a, b) => a.name.length - b.name.length,
             },
             {
@@ -68,8 +65,16 @@ const UsersPage = () => {
             {
                 title: "Редактирование",
                 dataIndex: "editing",
-                render: (record: AccountModel) => {
-                    return <Typography.Link onClick={() => edit(record)}>Редактировать</Typography.Link>;
+                render: (_, record) => {
+                    return (
+                        <Typography.Link
+                            onClick={() => {
+                                navigate(`${record.id}`);
+                            }}
+                        >
+                            Редактировать
+                        </Typography.Link>
+                    );
                 },
             },
         ],
