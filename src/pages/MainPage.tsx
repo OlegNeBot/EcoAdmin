@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from "react";
-import {Col, Divider, Dropdown, Image, Layout, Menu, MenuProps, Row, Space, Typography} from "antd";
+import {Button, Col, Divider, Dropdown, Image, Layout, Menu, MenuProps, Row, Space, Typography} from "antd";
 import {DownOutlined, ExclamationOutlined, HomeOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 import logo from "../logo.png";
 import {Outlet, useLocation, useNavigate} from "react-router-dom";
@@ -81,7 +81,14 @@ const MainPage = () => {
                     <a
                         onClick={(e) => {
                             e.preventDefault();
-                            console.log("Exit works!");
+
+                            localStorage.removeItem("accessToken");
+                            localStorage.removeItem("refreshToken");
+
+                            sessionStorage.removeItem("accessToken");
+                            sessionStorage.removeItem("refreshToken");
+
+                            navigate("/login");
                         }}
                     >
                         Выход
@@ -114,33 +121,19 @@ const MainPage = () => {
             <Layout>
                 <Header className="ant-layout-sider-light">
                     <Row>
-                        <Col span={8} offset={20}>
+                        <Col span={6} offset={18}>
                             <Dropdown menu={{items}}>
-                                {/* //TODO: Исправить на инлайн-вывод + кнопку с выходом (мб иконка). */}
-                                <a
-                                    onClick={(e) => {
-                                        e.preventDefault();
-
-                                        localStorage.removeItem("accessToken");
-                                        localStorage.removeItem("refreshToken");
-
-                                        sessionStorage.removeItem("accessToken");
-                                        sessionStorage.removeItem("refreshToken");
-
-                                        navigate("/login");
-                                    }}
-                                >
+                                <Button>
                                     <Space>
                                         {accountStore.account.name}
                                         <DownOutlined />
                                     </Space>
-                                </a>
+                                </Button>
                             </Dropdown>
                         </Col>
                     </Row>
                 </Header>
                 <Content>
-                    {/* // TODO: Исправить наличие скроллбаров. */}
                     <Outlet />
                 </Content>
                 <Footer style={{textAlign: "center"}}>EcoAdmin Автор: Олег Голованов Все права защищены</Footer>
