@@ -3,9 +3,16 @@ import accountStore from "../stores/AccountStore";
 import placeRequestStore from "../stores/PlaceRequestStore";
 import supportStore from "../stores/SupportStore";
 import {ExclamationOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
+import {useEffect} from "react";
 const {Title} = Typography;
 
 const HomePage = () => {
+    useEffect(() => {
+        accountStore.loadUsers();
+        placeRequestStore.loadRequests();
+        supportStore.loadSupportRequests();
+    }, []);
+
     return (
         <>
             <Row>
