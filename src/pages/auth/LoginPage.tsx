@@ -86,7 +86,7 @@ const LoginPage = () => {
                 sessionStorage.setItem("refreshToken", result.refreshToken);
 
                 authStore.setAuth();
-                navigate("/main");
+                navigate("/");
             } else {
                 setErrText(result !== undefined ? result : "Неизвестная ошибка!");
                 setIsModalOpen(true);
