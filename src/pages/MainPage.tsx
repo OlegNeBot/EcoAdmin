@@ -111,10 +111,10 @@ const MainPage = () => {
                 <Menu
                     mode="inline"
                     items={menuItems}
-                    selectedKeys={[selected]}
+                    selectedKeys={[selected !== "" ? selected : "main"]}
                     onClick={({key}) => {
                         setSelected(key);
-                        navigate(key);
+                        key !== "main" ? navigate(key) : navigate("/");
                     }}
                 />
             </Sider>
