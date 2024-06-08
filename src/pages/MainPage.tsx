@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from "react";
-import {Col, Divider, Dropdown, Image, Layout, Menu, MenuProps, Row, Space, Typography} from "antd";
+import {Button, Col, Divider, Dropdown, Image, Layout, Menu, MenuProps, Row, Space, Typography} from "antd";
 import {DownOutlined, ExclamationOutlined, HomeOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 import logo from "../logo.png";
 import {Outlet, useLocation, useNavigate} from "react-router-dom";
@@ -21,11 +21,15 @@ const MainPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!localStorage.getItem("accessToken") || !authStore.isAuth) {
+        if (!localStorage.getItem("accessToken")) {
+            authStore.removeAuth();
             navigate("/login");
+        } else {
+            authStore.setAuth();
+
+            accountStore.loadAccount();
         }
-        accountStore.loadAccount();
-    }, []);
+    }, [authStore.isAuth]);
 
     const menuItems: MenuItem[] = useMemo(
         () => [
@@ -77,7 +81,14 @@ const MainPage = () => {
                     <a
                         onClick={(e) => {
                             e.preventDefault();
-                            console.log("Exit works!");
+
+                            localStorage.removeItem("accessToken");
+                            localStorage.removeItem("refreshToken");
+
+                            sessionStorage.removeItem("accessToken");
+                            sessionStorage.removeItem("refreshToken");
+
+                            navigate("/login");
                         }}
                     >
                         Выход
@@ -96,49 +107,33 @@ const MainPage = () => {
                 onCollapse={(value) => setCollapsed(value)}
                 className="ant-layout-sider-light"
             >
-                <Image src={logo} style={{paddingTop: 10, paddingBottom: 3}} />
+                <Image src={logo} style={{paddingTop: 10, paddingBottom: 3}} preview={false} />
                 <Menu
                     mode="inline"
                     items={menuItems}
-                    selectedKeys={[selected]}
+                    selectedKeys={[selected !== "" ? selected : "main"]}
                     onClick={({key}) => {
                         setSelected(key);
-                        navigate(key);
+                        key !== "main" ? navigate(key) : navigate("/");
                     }}
                 />
             </Sider>
             <Layout>
                 <Header className="ant-layout-sider-light">
                     <Row>
-                        <Col span={8} offset={20}>
+                        <Col span={6} offset={18}>
                             <Dropdown menu={{items}}>
-                                {/* //TODO: Исправить на инлайн-вывод + кнопку с выходом (мб иконка). */}
-                                <a
-                                    onClick={(e) => {
-                                        e.preventDefault();
-
-                                        if (authStore.remember) {
-                                            localStorage.removeItem("accessToken");
-                                            localStorage.removeItem("refreshToken");
-                                        }
-
-                                        sessionStorage.removeItem("accessToken");
-                                        sessionStorage.removeItem("refreshToken");
-
-                                        navigate("/login");
-                                    }}
-                                >
+                                <Button>
                                     <Space>
                                         {accountStore.account.name}
                                         <DownOutlined />
                                     </Space>
-                                </a>
+                                </Button>
                             </Dropdown>
                         </Col>
                     </Row>
                 </Header>
                 <Content>
-                    {/* // TODO: Исправить наличие скроллбаров. */}
                     <Outlet />
                 </Content>
                 <Footer style={{textAlign: "center"}}>EcoAdmin Автор: Олег Голованов Все права защищены</Footer>

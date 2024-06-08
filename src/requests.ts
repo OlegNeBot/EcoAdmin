@@ -19,9 +19,13 @@ const $api = axios.create({
 });
 
 $api.interceptors.request.use((config) => {
-    config.headers.Authorization = `Bearer ${
-        authStore.remember ? localStorage.getItem("accessToken") : sessionStorage.getItem("accessToken")
-    }`;
+    var token = localStorage.getItem("accessToken");
+
+    if (!token) {
+        token = sessionStorage.getItem("accessToken");
+    }
+
+    config.headers.Authorization = `Bearer ${token}`;
 
     return config;
 });
@@ -49,9 +53,13 @@ $api.interceptors.response.use(
             originalRequest._isRetry = true;
             isRefreshing = true;
             await refreshToken().finally(() => (isRefreshing = false));
-            originalRequest.headers.Authorization = `Bearer ${
-                authStore.remember ? localStorage.getItem("accessToken") : sessionStorage.getItem("accessToken")
-            }`;
+            var token = localStorage.getItem("accessToken");
+
+            if (!token) {
+                token = sessionStorage.getItem("accessToken");
+            }
+
+            originalRequest.headers.Authorization = `Bearer ${token}`;
 
             return await $api.request(originalRequest);
         } else if (error.config_isRetry) {
@@ -61,12 +69,15 @@ $api.interceptors.response.use(
         //throw error;
         console.log(error);
 
+        authStore.removeAuth();
+
         return Promise.reject(error);
     }
 );
 
 async function refreshToken() {
     var rToken = localStorage.getItem("refreshToken");
+
     if (!rToken) {
         rToken = sessionStorage.getItem("refreshToken");
     }
@@ -74,7 +85,7 @@ async function refreshToken() {
     await axios
     .post(DEV_REQUEST_URL + "auth/refresh", {RToken: rToken})
     .then((response) => {
-        if (authStore.remember) {
+        if (localStorage.getItem("accessToken") && localStorage.getItem("refreshToken")) {
             localStorage.setItem("accessToken", response.data.accessToken);
             localStorage.setItem("refreshToken", response.data.refreshToken);
         }

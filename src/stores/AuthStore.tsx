@@ -13,10 +13,8 @@ class AuthStore {
     };
 
     removeAuth = () => {
-        if (this.remember) {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-        }
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
 
         sessionStorage.removeItem("accessToken");
         sessionStorage.removeItem("refreshToken");

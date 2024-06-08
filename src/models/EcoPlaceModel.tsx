@@ -12,7 +12,7 @@ type EcoPlaceModel = {
     endTime: Date;
     isApproved: boolean;
     ecoPlaceType: {
-        Name: string;
+        name: string;
     };
 };
 
@@ -21,7 +21,8 @@ export type EcoPlaceRequestModel = {
     description: string;
     isReviewed: boolean;
     ecoPlace: EcoPlaceModel;
-    placeRequest: {
+    placeResponsible?: {
         account: AccountModel;
     };
+    account?: AccountModel;
 };

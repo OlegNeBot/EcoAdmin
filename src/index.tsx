@@ -21,6 +21,8 @@ root.render(
                     Table: {
                         headerBg: "#4D7D0F",
                         headerColor: "#FFFFFF",
+                        headerSortActiveBg: "#82a457",
+                        headerSortHoverBg: "#82a457",
                     },
                     Layout: {
                         lightSiderBg: "#4D7D0F",

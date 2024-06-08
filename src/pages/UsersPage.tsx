@@ -1,57 +1,86 @@
-import {Col, Form, Input, InputNumber, Row, Table, Typography} from "antd";
+import {Col, Row, Table, Typography, TableColumnsType, Input, Space} from "antd";
 import {useEffect, useMemo, useState} from "react";
 import accountStore from "../stores/AccountStore";
 import {observer} from "mobx-react-lite";
-import {AccountModel} from "../models/AccountModel";
+import {useNavigate} from "react-router-dom";
+import {SearchOutlined} from "@ant-design/icons";
 
 const {Title} = Typography;
 
 const UsersPage = () => {
+    const navigate = useNavigate();
+
+    const [searchValue, setSearchValue] = useState("");
+    const [dataSource, setDataSource] = useState(accountStore.users);
+
     useEffect(() => {
-        accountStore.loadUsers();
-    }, [accountStore.users]);
+        accountStore.loadUsers().then(() => {
+            setDataSource(accountStore.users);
+        });
+    }, []);
 
-    const edit = (record: AccountModel) => {
-        // TODO: Добавить переход на страницу с редактированием.
-    };
-
-    const columns = useMemo(
+    const columns: TableColumnsType = useMemo(
         () => [
             {
                 title: "Имя",
                 dataIndex: "name",
                 key: "name",
-                editable: true,
                 render: (name: string) => {
                     return <b>{name}</b>;
                 },
+                showSorterTooltip: {target: "sorter-icon"},
+                sorter: (a, b) => a.name.length - b.name.length,
             },
             {
                 title: "Email",
                 dataIndex: "email",
                 key: "email",
-                editable: true,
+                showSorterTooltip: {target: "sorter-icon"},
+                sorter: (a, b) => a.email.length - b.email.length,
             },
             {
                 title: "Кол-во баллов",
                 dataIndex: "totalScore",
                 key: "totalScore",
-                editable: true,
+                showSorterTooltip: {target: "sorter-icon"},
+                sorter: (a, b) => a.totalScore - b.totalScore,
             },
             {
                 title: "Роль",
                 dataIndex: "role",
                 key: "role",
-                editable: false,
                 render: (role: {name: string}) => {
                     return role.name;
                 },
+                filters: [
+                    {
+                        text: "User",
+                        value: "User",
+                    },
+                    {
+                        text: "EcoPlace",
+                        value: "EcoPlace",
+                    },
+                    {
+                        text: "Admin",
+                        value: "Admin",
+                    },
+                ],
+                onFilter: (value, record) => record.role.name.indexOf(value as string) === 0,
             },
             {
                 title: "Редактирование",
                 dataIndex: "editing",
-                render: (record: AccountModel) => {
-                    return <Typography.Link onClick={() => edit(record)}>Редактировать</Typography.Link>;
+                render: (_, record) => {
+                    return (
+                        <Typography.Link
+                            onClick={() => {
+                                navigate(`${record.id}`);
+                            }}
+                        >
+                            Редактировать
+                        </Typography.Link>
+                    );
                 },
             },
         ],
@@ -65,10 +94,33 @@ const UsersPage = () => {
                     <Title>Пользователи</Title>
                 </Col>
             </Row>
+            <Row style={{marginBottom: 16}}>
+                <Col span={6} offset={3}>
+                    <Input
+                        placeholder="Поиск по имени"
+                        value={searchValue}
+                        size="large"
+                        suffix={<SearchOutlined />}
+                        onChange={(e) => {
+                            const currValue = e.target.value;
+                            setSearchValue(currValue);
+
+                            const searchedData = accountStore.users.filter((record) =>
+                                record.name.toLowerCase().includes(currValue)
+                            );
+                            setDataSource(searchedData);
+                        }}
+                    />
+                </Col>
+            </Row>
             <Row>
                 <Col xs={24} md={{span: 18, offset: 3}}>
-                    {/* //TODO: Добавить сортировку, фильтрацию и т.д. */}
-                    <Table columns={columns} dataSource={accountStore.users} />
+                    <Table
+                        columns={columns}
+                        dataSource={dataSource}
+                        rowKey={(record) => record.id}
+                        showSorterTooltip={{target: "sorter-icon"}}
+                    />
                 </Col>
             </Row>
         </>
