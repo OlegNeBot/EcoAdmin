@@ -6,7 +6,7 @@ export type SupportModel = {
     account: AccountModel;
     isCompleted: boolean;
 
-    supportResponsible: {
+    supportResponsible?: {
         account: AccountModel;
     };
 };
