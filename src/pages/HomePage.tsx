@@ -4,6 +4,7 @@ import placeRequestStore from "../stores/PlaceRequestStore";
 import supportStore from "../stores/SupportStore";
 import {ExclamationOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 import {useEffect} from "react";
+import {observer} from "mobx-react-lite";
 const {Title} = Typography;
 
 const HomePage = () => {
@@ -59,4 +60,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default observer(HomePage);
